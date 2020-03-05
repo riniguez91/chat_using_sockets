@@ -5,9 +5,9 @@ import pickle
 import os
 
 class Cliente():
-
-	def __init__(self, host=socket.gethostname(), port=59989):
+	def __init__(self, host=str(input("Introduzca la ip del servidor: ")), port=int(input("Introduzca el numero del puerto "))):
 		self.sock = socket.socket()
+		self.port = port
 		self.sock.connect((str(host), int(port)))
 		hilo_recv_mensaje = threading.Thread(target=self.recibir)
 		hilo_recv_mensaje.daemon = True
@@ -16,8 +16,8 @@ class Cliente():
 		print('Hilos activos', threading.active_count())
 
 		while True:
-			msg = input('\nEscriba texto ? ** Enviar = ENTER ** Abandonar Chat = Q \n')
-			if msg != 'Q' :
+			msg = input('\nEscriba texto ? ** Enviar = ENTER ** Abandonar Chat = 1 \n')
+			if msg != 1 :
 				self.enviar(msg)
 			else:
 				print(" **** TALOGOOO  ****")

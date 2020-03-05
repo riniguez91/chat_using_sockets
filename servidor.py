@@ -4,8 +4,10 @@ import sys
 import pickle
 import os
 
+# Un programa no consume recursos mientras que un proceso si
+
 class Servidor():
-	def __init__(self, host=socket.gethostname(), port=59989):
+	def __init__(self, port = input("Porfavor introduzca numero de puerto: "), host=socket.gethostname()):
 		self.clientes = []
 		self.sock = socket.socket()
 		self.sock.bind((str(host), int(port)))
@@ -15,15 +17,19 @@ class Servidor():
 		aceptar = threading.Thread(target=self.aceptarC)
 		procesar = threading.Thread(target=self.procesarC)
 		
+		print("Su ip actual es", socket.gethostbyname(host))
+
 		aceptar.daemon = True
 		aceptar.start()
+		print("		___Hilo de aceptar empezado en modo DAEMON")
 
 		procesar.daemon = True
 		procesar.start()
+		print("		___Hilo de procesar empezado en modo DAEMON")
 
 		while True:
-			msg = input('SALIR = Q\n')
-			if msg == 'Q':
+			msg = int(input('SALIR = 1\n'))
+			if msg == 1:
 				print("**** TALOGOOO *****")
 				self.sock.close()
 				sys.exit()
@@ -42,20 +48,21 @@ class Servidor():
 		while True:
 			try:
 				conn, addr = self.sock.accept()
-				print(f"\nConexion aceptada via {conn}\n")
+				print(f"\nConexion aceptada via {addr}\n")
 				conn.setblocking(False)
 				self.clientes.append(conn)
 			except:
 				pass
 
 	def procesarC(self):
-		print("Procesamiento de mensajes iniciado")
 		while True:
 			if len(self.clientes) > 0:
 				for c in self.clientes:
 					try:
 						data = c.recv(32)
 						if data:
+							print("Conexiones ahora mismo", len(self.clientes))
+							print(pickle.loads(data))
 							self.broadcast(data,c)
 					except:
 						pass
